@@ -30,7 +30,6 @@ public class MapGenerator : MonoBehaviour
 
  private void GenerateMap()
  {
-
   RandomFillMap();
   StartCoroutine(DelaySmooth());
  }
