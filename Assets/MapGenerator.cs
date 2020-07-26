@@ -2,17 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class MapGenerator : MonoBehaviour
 {
- [Range(1,3840)]public int width;
- [Range(1,3840)]public int height;
+ [Range(1,100)]public int width;
+ [Range(1,100)]public int height;
 
  public string seed;
  public bool useRandomSeed;
 
- [Range(0, 100)] public int randomFillPercent;
+ [Range(0,7)] public int wallDuplicationThreshold;
 
+ [Range(40, 60)] public int randomFillPercent;
+
+ [FormerlySerializedAs("runSmooth")] public bool reGenerate = false;
  //this is how you create a 2D Array!!!
  private int[,] map;
 
@@ -26,6 +30,7 @@ public class MapGenerator : MonoBehaviour
  {
   map = new int[width, height];
   RandomFillMap();
+  SmoothMap();
  }
 
 
@@ -60,12 +65,71 @@ public class MapGenerator : MonoBehaviour
   }
  }
 
- void SmoothMap()
+ public void Update()
  {
-  
+  if (reGenerate)
+  {
+   reGenerate = false;
+   GenerateMap();
+  }
  }
 
- private void OnDrawGizmos()
+ void SmoothMap()
+ {
+  int[,] mapB = map;
+  for (int x = 0; x < width; x++)
+  {
+   for (int y = 0; y < height; y++)
+   {
+    int neighborWallTiles = GetSurroundingWallCount(x, y);
+    if (neighborWallTiles > wallDuplicationThreshold)
+    {
+     mapB[x, y] = 1;
+    }
+    else if (neighborWallTiles < wallDuplicationThreshold)
+    {
+     mapB[x, y] = 0;
+    }
+   }
+  }
+//Smoothed Map is now main map
+  map = mapB;
+ }
+
+//Return the number of walls that surround a tile.
+ int GetSurroundingWallCount(int gridX, int gridY)
+  {
+   int wallCount = 0;
+   //Looping through a 3-by-3 grid!
+   //Get the left neighbor, The current pos, then the Right neighbor
+   for (int neighborX = gridX - 1; neighborX <= gridX + 1; neighborX++)
+   {
+    //Down neighbor, current pos, Up Neighbor;
+    for (int neighborY = gridY - 1; neighborY <= gridY + 1; neighborY++)
+    {
+     //Check if tile is INSIDE the  map, so we dont get an OUT OF INDEX ARRAY error
+     if (neighborX >= 0 && neighborX < width && neighborY >= 0 && neighborY < height)
+     {
+      //IGnore middle Tile
+      if (neighborX != gridX || neighborY != gridY)
+      {
+       //Map is a number between 0 and 1. If there is a wall, increment wallcount.
+       wallCount += map[neighborX, neighborY];
+      }
+     }
+     else
+     {
+      //If the tile is outside the map, count that as a wall.
+      wallCount++;
+     }
+
+    }
+
+   }
+   return wallCount;
+  }
+
+  private void OnDrawGizmos()
  {
   if (map != null)
   {

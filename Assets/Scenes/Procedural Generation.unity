@@ -235,9 +235,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 86
   height: 86
-  seed: 
+  seed: Benjamin
   useRandomSeed: 1
-  randomFillPercent: 16
+  wallDuplicationThreshold: 4
+  randomFillPercent: 45
+  reGenerate: 0
 --- !u!4 &2083673921
 Transform:
   m_ObjectHideFlags: 0
