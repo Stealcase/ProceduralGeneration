@@ -157,7 +157,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
+  m_BackGroundColor: {r: 1, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -168,13 +168,13 @@ Camera:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 86
-    height: 86
+    width: 1
+    height: 1
   near clip plane: 0.06
   far clip plane: 50
   field of view: 60
   orthographic: 1
-  orthographic size: 43
+  orthographic size: 50
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -233,12 +233,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5996d16f1b668c549949fd8fdef9f5ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 86
-  height: 86
+  width: 100
+  height: 100
   seed: Benjamin
   useRandomSeed: 1
   wallDuplicationThreshold: 4
-  randomFillPercent: 45
+  randomFillPercent: 50
   reGenerate: 0
 --- !u!4 &2083673921
 Transform:
