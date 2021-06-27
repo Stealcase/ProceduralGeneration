@@ -167,7 +167,7 @@ public class MapGenerator : MonoBehaviour
      //If the map coordinate value is 1, gizmo color is black. if value is not 1, White color.
      Gizmos.color = (VisibleMap[x, y] == 1) ? Color.black : Color.white;
      //Why negative height and width divided by 2? OOOOH because we want to calculate the Center of the grid (for some reason)
-     Vector3 pos = new Vector3(-width/2 + x +.5f,0, -height/2 + y + .5f);
+     Vector3 pos = new Vector3(-width/2 + x +.5f,-height/2 + y + .5f, 0);
      //Draw a cube with 
      Gizmos.DrawCube(pos, Vector3.one);
     }

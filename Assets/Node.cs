@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Helpers;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -36,6 +37,7 @@ namespace Assets
         public Vector2Int TopLeft { get; set; }
         public Vector2Int TopRight { get; set; }
         public Room Room { get; set; }
+        public Room Corridor { get; set; }
         public System.Random RandomGen { get; set; }
 
 
@@ -45,28 +47,24 @@ namespace Assets
         {
             if (TreeLayerIndex == MaxIterations)
             { return false; }
-            if(Width > maxSize || Height > maxSize && Width > minSize && Height > minSize)
+
+            if((Width > maxSize || Height > maxSize) && Width > minSize && Height > minSize)
             {
                 RandomSplit();
                 return true;
             }
-            if (Width > minSize || Height > minSize) 
+            if (Width/2 >= minSize) 
             {
 
-                RandomSplit();
+                SplitX();
                 return true;
-                
-                // //Otherwise, choose the biggest
-                // if (Width > Height) {
-                //     SplitX();
-                //     return true;
-                // }
-                // if(Width < Height)
-                // {
-                //     SplitY();
-                //     return true;
-                // }
             }
+            if(Height/2 >= minSize)
+            {
+                SplitY();
+                return true;
+            }
+            Debug.LogWarning("Couldn't split, was too small");
             return false;
         }
         public void RandomSplit()
@@ -80,15 +78,14 @@ namespace Assets
             else
             {
                 SplitX();
-
             }
         }
         public void SplitX()
         {
-            var Xdivision = Width / 2;
+            var divisionPoint = VectorHelper.NumberBetweenNumbers(BottomLeft.x, TopRight.x, minSize);
             //Calculate corners of left and right node
-            var right_node_left_corner = new Vector2Int(BottomLeft.x + Xdivision, BottomLeft.y);
-            var left_node_right_corner = new Vector2Int(TopRight.x - Xdivision, TopRight.y);
+            var right_node_left_corner = new Vector2Int(divisionPoint, BottomLeft.y);
+            var left_node_right_corner = new Vector2Int(divisionPoint, TopRight.y);
             int newIndex = TreeLayerIndex + 1;
 
             Debug.Log($"X Left. Layer {newIndex} \n Bottom Left {BottomLeft}. Top Right {left_node_right_corner}. Width {left_node_right_corner.x - BottomLeft.x} Height: {left_node_right_corner.y - BottomLeft.y}");
@@ -102,9 +99,10 @@ namespace Assets
         public void SplitY()
         {
             //One is created on the current location, one is created Halfway up from the current position;
-            var Ydivision = Height / 2;
-            var right_node_left_corner = new Vector2Int(BottomLeft.x, TopRight.y - Ydivision);
-            var left_node_right_corner = new Vector2Int(TopRight.x, TopRight.y - Ydivision);
+            var divisionPoint = VectorHelper.NumberBetweenNumbers(BottomLeft.y, TopRight.y, minSize);
+
+            var right_node_left_corner = new Vector2Int(BottomLeft.x, divisionPoint);
+            var left_node_right_corner = new Vector2Int(TopRight.x, divisionPoint);
             int newIndex = TreeLayerIndex + 1;
 
             Debug.Log($"Y Bottom. Layer {newIndex} \n Bottom Left {BottomLeft}. Top Right {left_node_right_corner} Width {left_node_right_corner.x - BottomLeft.x} Height: {left_node_right_corner.y - BottomLeft.y}");
@@ -149,29 +147,30 @@ namespace Assets
                 GenerateRoom();
             }
         }
-        public void Traverse(List<Node> nodes, List<Room> rooms)
+        public void Traverse(List<Node> nodes, List<Node> Leaves)
         {
             Debug.Log($"Traversing Child on layer {TreeLayerIndex}, with rect coords \n left:  {BottomLeft},  right: {TopRight}. Widht: {Width}, Heigth: {Height}");
             nodes.Add(this);
             if(LeftChild != null)
             {
-                LeftChild.Traverse(nodes, rooms);
+                LeftChild.Traverse(nodes, Leaves);
             }
             if(RightChild != null)
             {
-                RightChild.Traverse(nodes, rooms);
+                RightChild.Traverse(nodes, Leaves);
             }
-            if(Room != null)
+            //If this node is a Leaf
+            if(RightChild == null && LeftChild == null && Room != null)
             {
-                rooms.Add(Room);
+                Leaves.Add(this);
             }
         }
-
-
-
-        private void RemoveChild(Node node)
+        public void ConnectRooms()
         {
-            children.Remove(node);
+            if(Corridor == null)
+            {
+
+            }
         }
 
     }

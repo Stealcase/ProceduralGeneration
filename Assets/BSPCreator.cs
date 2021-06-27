@@ -20,6 +20,8 @@ public class BSPCreator : MonoBehaviour
     public int maxIterations;
     public int corridorWidth;
     public bool isGenerating = false;
+    public int[,] map;
+    public MapRenderer mapRenderer; 
 
 
 
@@ -32,7 +34,11 @@ public class BSPCreator : MonoBehaviour
     public void Generate()
     {
         generator = new BSPGenerator(roomSizeX, roomSizeY);
-        generator.CalculateRooms(maxIterations, minRoomSize,maxRoomSize);
+        map = generator.GenerateMap(maxIterations, minRoomSize,maxRoomSize);
+        if(mapRenderer != null)
+        {
+            mapRenderer.RenderMap(map);
+        }
         isGenerating = false;
     }
 
@@ -48,23 +54,22 @@ public class BSPCreator : MonoBehaviour
     private void OnDrawGizmos()
     {
         if (generator == null) { return; }
-        if (generator.Leafs != null && generator.Leafs.Count > 0)
+        if (generator.AllNodes != null && generator.AllNodes.Count > 0)
         {
             // Debug.Log("Drawing Meshes");
-            for (int i = 0; i < generator.Leafs.Count; i++)
+            for (int i = 0; i < generator.AllNodes.Count; i++)
             {
             // Debug.Log($"Drawing Mesh {i}");
                 var mesh = new Mesh();
-                float meshDistanceMod = generator.Leafs[i].TreeLayerIndex * 0.1f;
                 mesh.vertices = new Vector3[]{
-                    new Vector3(generator.Leafs[i].BottomLeft.x + meshDistanceMod,0, generator.Leafs[i].BottomLeft.y + meshDistanceMod),
-                    new Vector3(generator.Leafs[i].TopLeft.x + meshDistanceMod, 0, generator.Leafs[i].TopLeft.y - meshDistanceMod),
-                    new Vector3(generator.Leafs[i].BottomRight.x - meshDistanceMod, 0, generator.Leafs[i].BottomRight.y + meshDistanceMod),
-                    new Vector3(generator.Leafs[i].TopRight.x - meshDistanceMod, 0, generator.Leafs[i].TopRight.y - meshDistanceMod)
+                    new Vector3(generator.AllNodes[i].BottomLeft.x, generator.AllNodes[i].BottomLeft.y,0),
+                    new Vector3(generator.AllNodes[i].TopLeft.x, generator.AllNodes[i].TopLeft.y,0),
+                    new Vector3(generator.AllNodes[i].BottomRight.x, generator.AllNodes[i].BottomRight.y,0),
+                    new Vector3(generator.AllNodes[i].TopRight.x, generator.AllNodes[i].TopRight.y,0)
                 };
                 mesh.triangles = new int[]{ 0, 1, 2, 1,3,2};
                 mesh.RecalculateNormals();
-                var colorMod = generator.Leafs[i].TreeLayerIndex * 0.2f;
+                var colorMod = generator.AllNodes[i].TreeLayerIndex * 0.2f;
                 Gizmos.color = new Color(colorMod, 0.1f + colorMod, 1f, 1f);
                 Gizmos.DrawWireMesh(mesh,transform.position);
             }
@@ -73,10 +78,10 @@ public class BSPCreator : MonoBehaviour
 
                 var roomMesh = new Mesh();
                 roomMesh.vertices = new Vector3[]{
-                    new Vector3(generator.Rooms[i].BottomLeft.x,0, generator.Rooms[i].BottomLeft.y),
-                    new Vector3(generator.Rooms[i].BottomLeft.x, 0, generator.Rooms[i].TopRight.y),
-                    new Vector3(generator.Rooms[i].TopRight.x, 0, generator.Rooms[i].BottomLeft.y),
-                    new Vector3(generator.Rooms[i].TopRight.x, 0, generator.Rooms[i].TopRight.y)
+                    new Vector3(generator.Rooms[i].BottomLeft.x,generator.Rooms[i].BottomLeft.y,0),
+                    new Vector3(generator.Rooms[i].BottomLeft.x, generator.Rooms[i].TopRight.y,0),
+                    new Vector3(generator.Rooms[i].TopRight.x, generator.Rooms[i].BottomLeft.y,0),
+                    new Vector3(generator.Rooms[i].TopRight.x, generator.Rooms[i].TopRight.y,0)
                 };
                 roomMesh.triangles = new int[]{ 0, 1, 2, 1,3,2};
                 roomMesh.RecalculateNormals();
