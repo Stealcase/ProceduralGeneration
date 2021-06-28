@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Helpers
+namespace Stealcase.Helpers
 {
 
 public static class VectorHelper 
@@ -64,7 +64,7 @@ public static class VectorHelper
     {
         if(max - min < margin)
         {
-                Debug.LogError("Warning: Margin is too big");
+                Debug.LogError($"Warning: Margin is too big. Min: {min} Max: {max} Margin: {margin}");
             }
         var minimum = min + margin;
         var maximum = max - margin;

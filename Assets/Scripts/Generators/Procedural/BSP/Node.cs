@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using Helpers;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using Stealcase.Helpers;
 
-namespace Assets
+namespace Stealcase.Generators.Procedural.BSP
 {
 
     /// <summary>
@@ -32,6 +32,8 @@ namespace Assets
         private int MaxIterations { get; set; }
 
         public bool Visited { get; set; }
+        public Orientation Orientation { get; set; }
+        //TODO: KEEP TRACK OF WHERE THE SPLIT OCCURS!
         public Vector2Int BottomLeft { get; set; }
         public Vector2Int BottomRight { get; set; }
         public Vector2Int TopLeft { get; set; }
@@ -82,6 +84,7 @@ namespace Assets
         }
         public void SplitX()
         {
+            Orientation = Orientation.Horizontal;
             var divisionPoint = VectorHelper.NumberBetweenNumbers(BottomLeft.x, TopRight.x, minSize);
             //Calculate corners of left and right node
             var right_node_left_corner = new Vector2Int(divisionPoint, BottomLeft.y);
@@ -98,6 +101,7 @@ namespace Assets
         }
         public void SplitY()
         {
+            Orientation = Orientation.Vertical;
             //One is created on the current location, one is created Halfway up from the current position;
             var divisionPoint = VectorHelper.NumberBetweenNumbers(BottomLeft.y, TopRight.y, minSize);
 
@@ -165,11 +169,36 @@ namespace Assets
                 Leaves.Add(this);
             }
         }
-        public void ConnectRooms()
+        public void ConnectRooms(List<Room> corridors, int[,] map)
         {
             if(Corridor == null)
             {
-
+                if(RightChild != null && LeftChild != null && RightChild.Room != null && LeftChild.Room != null)
+                {
+                    switch (Orientation)
+                    {
+                        case Orientation.Horizontal:
+                            var topYVal = Mathf.Min(LeftChild.Room.TopRight.y, RightChild.Room.TopRight.y);
+                            var botYVal = Mathf.Max(LeftChild.Room.BottomLeft.y, RightChild.Room.BottomLeft.y);
+                            topYVal = Mathf.Max(topYVal, botYVal);
+                            var middleY = VectorHelper.NumberBetweenNumbers(botYVal, topYVal, 0);
+                            Corridor = new Room(new Vector2Int(LeftChild.Room.TopRight.x, middleY - 1),new Vector2Int(RightChild.Room.BottomLeft.x, middleY +1),2);
+                            break;
+                        case Orientation.Vertical:
+                            var rightmostX = Mathf.Min(LeftChild.Room.TopRight.x, RightChild.Room.TopRight.x);
+                            var leftMostX = Mathf.Max(LeftChild.Room.BottomLeft.x, RightChild.Room.BottomLeft.x);
+                            rightmostX = Mathf.Max(rightmostX, leftMostX);
+                            var middleX = VectorHelper.NumberBetweenNumbers(leftMostX, rightmostX, 0);
+                            Corridor = new Room(new Vector2Int(LeftChild.Room.TopRight.x, middleX - 1),new Vector2Int(RightChild.Room.BottomLeft.x, middleX +1),2);
+                            break;
+                    }
+                    corridors.Add(Corridor);
+                    Corridor.ToMap(map);
+                }
+                if(Parent != null)
+                {
+                    Parent.ConnectRooms(corridors, map);
+                }
             }
         }
 

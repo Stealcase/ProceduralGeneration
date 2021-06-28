@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Assets;
+using Stealcase.Helpers;
 using UnityEngine;
+using Stealcase.Generators.Behaviour;
 
-
+namespace Stealcase.Generators.Procedural.BSP
+{
+    
 public enum Orientation
 {
     Horizontal,
@@ -88,6 +91,21 @@ public class BSPCreator : MonoBehaviour
                 Gizmos.color = new Color(1f, 1f, 1f, 1f);
                 Gizmos.DrawMesh(roomMesh, transform.position);
             }
+            for (int i = 0; i < generator.Corridors.Count; i++)
+            {
+
+                var roomMesh = new Mesh();
+                roomMesh.vertices = new Vector3[]{
+                    new Vector3(generator.Corridors[i].BottomLeft.x,generator.Corridors[i].BottomLeft.y,0),
+                    new Vector3(generator.Corridors[i].BottomLeft.x, generator.Corridors[i].TopRight.y,0),
+                    new Vector3(generator.Corridors[i].TopRight.x, generator.Corridors[i].BottomLeft.y,0),
+                    new Vector3(generator.Corridors[i].TopRight.x, generator.Corridors[i].TopRight.y,0)
+                };
+                roomMesh.triangles = new int[]{ 0, 1, 2, 1,3,2};
+                roomMesh.RecalculateNormals();
+                Gizmos.color = new Color(0f, 1f, 1f, 1f);
+                Gizmos.DrawMesh(roomMesh, transform.position);
+            }
         }
         // {
         //     for(int x = 0; x < width; x++)
@@ -104,4 +122,6 @@ public class BSPCreator : MonoBehaviour
             // }
         // }
     }
+}
+
 }

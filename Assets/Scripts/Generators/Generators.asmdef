@@ -1,3 +1,15 @@
-﻿{
-	"name": "Generators"
+{
+    "name": "Stealcase.Generators",
+    "references": [
+        "GUID:25034fd9d8a3ea74c9a382797aadfb8f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

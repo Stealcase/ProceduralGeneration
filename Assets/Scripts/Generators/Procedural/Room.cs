@@ -1,4 +1,4 @@
-using Helpers;
+using Stealcase.Helpers;
 using UnityEngine;
 
 public class Room
@@ -11,6 +11,7 @@ public class Room
     public int Height { get; set; }
     public Vector2Int BottomLeft { get; set; }
     public Vector2Int TopRight { get; set; }
+    public Vector2 Center { get => new Vector2(TopRight.x - (Width / 2), TopRight.y - (Height / 2)); }
     public Room(Vector2Int bottomLeft, Vector2Int topRight, int minSize)
     {
         var tuple = VectorHelper.RectWithinRect(bottomLeft, topRight, minSize);
