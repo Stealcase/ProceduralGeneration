@@ -89,6 +89,35 @@ namespace Stealcase.Generators.Procedural.BSP
         }
         public void SplitX()
         {
+            var tup = CreateVerticalSplit();
+            RectInt leftRect = tup.Item1;
+            RectInt rightRect = tup.Item2;
+            int newIndex = TreeLayerIndex + 1;
+
+            Debug.Log($"X Left. Layer {newIndex} \n {leftRect}");
+            Debug.Log($"X Right.  Layer {newIndex} \n {rightRect}");
+
+            LeftChild = new Node(leftRect,newIndex, this, MaxIterations, minSize, maxSize, RandomGen);
+            //Create node filling right half
+            RightChild = new Node(rightRect, newIndex, this, MaxIterations, minSize, maxSize, RandomGen);
+        }
+        public void SplitY()
+        {
+            var tup = CreateHorizontalSplit();
+            RectInt leftRect = tup.Item1;
+            RectInt rightRect = tup.Item2;
+            int newIndex = TreeLayerIndex + 1;
+
+            Debug.Log($"Y Bottom. Layer {newIndex} \n {leftRect}");
+            Debug.Log($"Y Upper. Layer {newIndex} \n {rightRect}");
+            //Create node filling bottom
+            LeftChild = new Node(leftRect, newIndex, this, MaxIterations, minSize, maxSize, RandomGen);
+            //Create node filling from middle to top.
+            RightChild = new Node(rightRect, newIndex, this, MaxIterations, minSize, maxSize, RandomGen);
+
+        }
+        public Tuple<RectInt,RectInt> CreateVerticalSplit()
+        {
             Orientation = Orientation.Vertical;
             var divisionPoint = VectorHelper.NumberBetweenNumbers(0, Rect.width, minSize);
             Debug.Log($"X DIVISION: {divisionPoint} iteration {TreeLayerIndex}");
@@ -97,34 +126,28 @@ namespace Stealcase.Generators.Procedural.BSP
             var rightNode_Origin = new Vector2Int(Rect.xMin + divisionPoint, Rect.yMin);
             var rightNode_Size = new Vector2Int(Rect.xMax - rightNode_Origin.x, Rect.height);
             
-            int newIndex = TreeLayerIndex + 1;
-
             //Create node filling left half
             var leftRect = new RectInt(Rect.min, left_Node_Size);
             var rightRect = new RectInt(rightNode_Origin, rightNode_Size);
-            Debug.Log($"X Left. Layer {newIndex} \n {leftRect}");
-            Debug.Log($"X Right.  Layer {newIndex} \n {rightRect}");
+
 
             Debug.Log($"LeftRect CONTAINS {Rect.Contains(leftRect.min)} && {Rect.yMax == leftRect.yMax} {Rect.max} {leftRect.max}");
             Debug.Log($"RightRect: CONTAINS {Rect.Contains(rightRect.min)} && {Rect.max == rightRect.max} {Rect.max} {rightRect.max}");
             Debug.Log($"TopRect: COMPARE LEFT: {leftRect.xMax} RIGHT: {rightRect.xMin}");
+            return new Tuple<RectInt, RectInt>(leftRect, rightRect);
 
-            LeftChild = new Node(leftRect,newIndex, this, MaxIterations, minSize, maxSize, RandomGen);
-            //Create node filling right half
-            RightChild = new Node(rightRect, newIndex, this, MaxIterations, minSize, maxSize, RandomGen);
         }
-        public void SplitY()
+        public Tuple<RectInt, RectInt> CreateHorizontalSplit()
         {
             Orientation = Orientation.Horizontal;
             //One is created on the current location, one is created Halfway up from the current position;
+            //"NumberBetweenNumbers" is a place where we could possibly apply weight towards bigger or smaller rooms
             var divisionPoint = VectorHelper.NumberBetweenNumbers(0, Rect.height, minSize);
             Debug.Log($"Y DIVISION: {divisionPoint} iteration {TreeLayerIndex}");
 
             var bottomNode_Size = new Vector2Int(Rect.width, divisionPoint);
             var rightNode_Origin = new Vector2Int(Rect.xMin, Rect.yMin + divisionPoint);
             var rightNodeSize = new Vector2Int(Rect.width, Rect.yMax - rightNode_Origin.y);
-
-            int newIndex = TreeLayerIndex + 1;
 
             var leftRect = new RectInt(Rect.min, bottomNode_Size);
             var rightRect = new RectInt(rightNode_Origin, rightNodeSize);
@@ -133,15 +156,7 @@ namespace Stealcase.Generators.Procedural.BSP
             
             Debug.Log($"TopRect: CONTAINS {Rect.Contains(rightRect.min)} && {Rect.max == rightRect.max}  {Rect.max} {rightRect.max}");
             Debug.Log($"BottomRect: CONTAINS {Rect.Contains(leftRect.min)} && {Rect.xMax == leftRect.xMax} {Rect.max} {leftRect.max}");
-
-            Debug.Log($"Y Bottom. Layer {newIndex} \n {leftRect}");
-            Debug.Log($"Y Upper. Layer {newIndex} \n {rightRect}");
-
-            //Create node filling bottom
-            LeftChild = new Node(leftRect, TreeLayerIndex +1, this, MaxIterations, minSize, maxSize, RandomGen);
-            //Create node filling from middle to top.
-            RightChild = new Node(rightRect, TreeLayerIndex + 1, this, MaxIterations, minSize, maxSize, RandomGen);
-
+            return new Tuple<RectInt, RectInt>(leftRect, rightRect);
         }
         public void GenerateRoom()
         {
