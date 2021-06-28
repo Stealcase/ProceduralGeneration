@@ -63,5 +63,22 @@ namespace Stealcase.Generators.Procedural
                 }
             }
         }
+        //Inverts values that are 0 and makes them 1, and vice versa.
+        public static int[,] InvertMap(int[,] map)
+        {
+            var width = map.GetLength(0);
+            var height = map.GetLength(1);
+            int[,] invertedMap = new int[width, height];
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    int val = map[x, y];
+                    if(val == 0)invertedMap[x, y] = 1;
+                    if(val == 1)invertedMap[x, y] = 0;
+                }
+            }
+            return map;
+        }
     }
 }

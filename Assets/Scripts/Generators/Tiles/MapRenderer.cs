@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using Stealcase.Generators.Procedural;
 
-namespace Stealcase.Generators.Behaviour
+namespace Stealcase.Generators.Tiles
 {
     public class MapRenderer : MonoBehaviour
     {
@@ -19,6 +19,14 @@ namespace Stealcase.Generators.Behaviour
         public void RenderMap(int[,] map)
         {
             MapArrayGenerator.RenderMap(map, tilemap, tile);
+        }
+        public void UpdateMap(int[,] map)
+        {
+            MapArrayGenerator.UpdateMap(map, tilemap);
+        }
+        public void ResetMap()
+        {
+            tilemap.ClearAllTiles();
         }
     }
 }

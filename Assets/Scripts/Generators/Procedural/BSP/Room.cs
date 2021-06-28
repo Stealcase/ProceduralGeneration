@@ -9,11 +9,12 @@ namespace Stealcase.Generators.Procedural.BSP
         /// The Center position of the object
         /// </summary>
         // Vector2 Position;
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public int Width { get => TopRight.x - BottomLeft.x; }
+        public int Height { get => TopRight.y - BottomLeft.y; }
+        public int Area { get => Width * Height; }
         public Vector2Int BottomLeft { get; set; }
         public Vector2Int TopRight { get; set; }
-        public Vector2 Center { get => new Vector2(TopRight.x - (Width / 2), TopRight.y - (Height / 2)); }
+        public Vector2 Center { get => new Vector2(BottomLeft.x + (Width / 2), BottomLeft.y + (Height / 2)); }
         public Room(Vector2Int bottomLeft, Vector2Int topRight, int minSize)
         {
             var tuple = VectorHelper.RectWithinRect(bottomLeft, topRight, minSize);
