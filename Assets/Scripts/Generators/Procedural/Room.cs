@@ -11,17 +11,16 @@ public class Room
     public int Height { get; set; }
     public Vector2Int BottomLeft { get; set; }
     public Vector2Int TopRight { get; set; }
+    public RectInt Rect { get; set; }
     public Vector2 Center { get => new Vector2(TopRight.x - (Width / 2), TopRight.y - (Height / 2)); }
     public Room(Vector2Int bottomLeft, Vector2Int topRight, int minSize)
     {
-        var tuple = VectorHelper.RectWithinRect(bottomLeft, topRight, minSize);
-        BottomLeft = tuple.Item1;
-        TopRight = tuple.Item2;
+        Rect = VectorHelper.RectWithinBounds(bottomLeft, topRight, minSize);
+        // Rect.x = tuple.Item1.x;
+
 
         Debug.Log($"Room BottomLeft {BottomLeft}");
         Debug.Log($"Room TopRight {TopRight}");
-        float Width = TopRight.x - BottomLeft.x;
-        float Height = TopRight.y - BottomLeft.y;
         // Position = new Vector2(TopRight.x - (Width / 2), this.TopRight.y - (Height / 2));
     }
     public void ToMap(int[,] map)

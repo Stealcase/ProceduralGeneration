@@ -16,12 +16,12 @@ public enum Orientation
     public class BSPCreator : MonoBehaviour
     {
 
-    public BSPGenerator generator;
-    public int roomSizeX, roomSizeY;
-    public int minRoomSize;
-    public int maxRoomSize;
-    public int maxIterations;
-    public int corridorWidth;
+    [SerializeField]public BSPGenerator generator;
+    [Range(8, 128)] public int roomSizeX = 8, roomSizeY = 8;
+    [Range(4,32)]public int minRoomSize;
+    [Range(6,48)]public int maxRoomSize;
+    [Range(1,10)]public int maxIterations;
+    [Range(1,8)]public int corridorWidth;
     public bool isGenerating = false;
     public int[,] map;
     public MapRenderer mapRenderer; 

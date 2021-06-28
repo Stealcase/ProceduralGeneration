@@ -26,6 +26,10 @@ namespace Stealcase.Generators.Procedural.CellularAutomata
             {
                 mapGenerator.OverlayTilemap();
             }
+            if(GUILayout.Button("Invert Map"))
+            {
+                mapGenerator.InvertMap();
+            }
         }
     }
     

@@ -23,8 +23,8 @@ namespace Stealcase.Generators.Procedural.BSP
                     var mesh = new Mesh();
                     mesh.vertices = new Vector3[]{
                         new Vector3(bSPCreator.generator.AllNodes[i].BottomLeft.x, bSPCreator.generator.AllNodes[i].BottomLeft.y,0),
-                        new Vector3(bSPCreator.generator.AllNodes[i].TopLeft.x, bSPCreator.generator.AllNodes[i].TopLeft.y,0),
-                        new Vector3(bSPCreator.generator.AllNodes[i].BottomRight.x, bSPCreator.generator.AllNodes[i].BottomRight.y,0),
+                        new Vector3(bSPCreator.generator.AllNodes[i].BottomLeft.x, bSPCreator.generator.AllNodes[i].TopRight.y,0),
+                        new Vector3(bSPCreator.generator.AllNodes[i].TopRight.x, bSPCreator.generator.AllNodes[i].BottomLeft.y,0),
                         new Vector3(bSPCreator.generator.AllNodes[i].TopRight.x, bSPCreator.generator.AllNodes[i].TopRight.y,0)
                     };
                     mesh.triangles = new int[] { 0, 1, 2, 1, 3, 2 };

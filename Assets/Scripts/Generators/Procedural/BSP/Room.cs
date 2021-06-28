@@ -9,30 +9,26 @@ namespace Stealcase.Generators.Procedural.BSP
         /// The Center position of the object
         /// </summary>
         // Vector2 Position;
-        public int Width { get => TopRight.x - BottomLeft.x; }
-        public int Height { get => TopRight.y - BottomLeft.y; }
+        public int Width { get => Rect.width; }
+        public int Height { get => Rect.height; }
         public int Area { get => Width * Height; }
-        public Vector2Int BottomLeft { get; set; }
-        public Vector2Int TopRight { get; set; }
+        public Vector2Int BottomLeft { get => Rect.min; }
+        public Vector2Int TopRight { get => Rect.max; }
+        public RectInt Rect { get; set; }
         public Vector2 Center { get => new Vector2(BottomLeft.x + (Width / 2), BottomLeft.y + (Height / 2)); }
         public Room(Vector2Int bottomLeft, Vector2Int topRight, int minSize)
         {
-            var tuple = VectorHelper.RectWithinRect(bottomLeft, topRight, minSize);
-            BottomLeft = tuple.Item1;
-            TopRight = tuple.Item2;
-
-            Debug.Log($"Room BottomLeft {BottomLeft}");
-            Debug.Log($"Room TopRight {TopRight}");
-            float Width = TopRight.x - BottomLeft.x;
-            float Height = TopRight.y - BottomLeft.y;
-            // Position = new Vector2(TopRight.x - (Width / 2), this.TopRight.y - (Height / 2));
+            Rect = VectorHelper.RectWithinBounds(bottomLeft, topRight, minSize);
+            // Debug.Log($"Room BottomLeft {Rect.min}");
+            // Debug.Log($"Room TopRight {Rect.max}");
+            Debug.Log($"Created room with dimensions Width: {Width} Height: {Height}");
         }
         public void ToMap(int[,] map)
         {
-            var xStart = BottomLeft.x;
-            var xEnd = TopRight.x;
-            var ystart = BottomLeft.y;
-            var yEnd = TopRight.y;
+            var xStart = Rect.xMin;
+            var xEnd = Rect.xMax;
+            var ystart = Rect.yMin;
+            var yEnd = Rect.yMax;
 
             for (int x = xStart; x < xEnd; x++)
             {

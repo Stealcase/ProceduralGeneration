@@ -15,8 +15,8 @@ namespace Stealcase.Generators.Procedural.BSP
     /// </summary>
     public class Node
     {
-        public int Width { get => TopRight.x - BottomLeft.x; }
-        public int Height { get => TopRight.y - BottomLeft.y; }
+        public int Width { get => Rect.width; }
+        public int Height { get => Rect.height; }
 
         public int minSize;
         public int maxSize;
@@ -32,12 +32,17 @@ namespace Stealcase.Generators.Procedural.BSP
         private int MaxIterations { get; set; }
 
         public bool Visited { get; set; }
+        /// <summary>
+        /// The point where the division occured
+        /// </summary>
+        private int DivisionPoint{ get; set; }
+        /// <summary>
+        /// The orientation of the divison.
+        /// </summary>
         public Orientation Orientation { get; set; }
-        //TODO: KEEP TRACK OF WHERE THE SPLIT OCCURS!
-        public Vector2Int BottomLeft { get; set; }
-        public Vector2Int BottomRight { get; set; }
-        public Vector2Int TopLeft { get; set; }
-        public Vector2Int TopRight { get; set; }
+        public Vector2Int BottomLeft { get => Rect.min; }
+        public Vector2Int TopRight { get => Rect.max; }
+        public RectInt Rect { get; set; }
         public Room Room { get; set; }
         public Room Corridor { get; set; }
         public System.Random RandomGen { get; set; }
@@ -55,7 +60,7 @@ namespace Stealcase.Generators.Procedural.BSP
                 RandomSplit();
                 return true;
             }
-            if (Width/2 >= minSize) 
+            if (Width/2 >= minSize && Height > minSize) 
             {
 
                 SplitX();
@@ -66,7 +71,7 @@ namespace Stealcase.Generators.Procedural.BSP
                 SplitY();
                 return true;
             }
-            Debug.LogWarning("Couldn't split, was too small");
+            Debug.LogWarning($"Couldn't split, was too small. Width: {Width}, Height: {Height}");
             return false;
         }
         public void RandomSplit()
@@ -84,37 +89,58 @@ namespace Stealcase.Generators.Procedural.BSP
         }
         public void SplitX()
         {
-            Orientation = Orientation.Horizontal;
-            var divisionPoint = VectorHelper.NumberBetweenNumbers(BottomLeft.x, TopRight.x, minSize);
+            Orientation = Orientation.Vertical;
+            var divisionPoint = VectorHelper.NumberBetweenNumbers(0, Rect.width, minSize);
+            Debug.Log($"X DIVISION: {divisionPoint} iteration {TreeLayerIndex}");
             //Calculate corners of left and right node
-            var right_node_left_corner = new Vector2Int(divisionPoint, BottomLeft.y);
-            var left_node_right_corner = new Vector2Int(divisionPoint, TopRight.y);
+            var left_Node_Size = new Vector2Int(divisionPoint, Rect.height);
+            var rightNode_Origin = new Vector2Int(Rect.xMin + divisionPoint, Rect.yMin);
+            var rightNode_Size = new Vector2Int(Rect.xMax - rightNode_Origin.x, Rect.height);
+            
             int newIndex = TreeLayerIndex + 1;
 
-            Debug.Log($"X Left. Layer {newIndex} \n Bottom Left {BottomLeft}. Top Right {left_node_right_corner}. Width {left_node_right_corner.x - BottomLeft.x} Height: {left_node_right_corner.y - BottomLeft.y}");
-            Debug.Log($"X Right. Layer {newIndex} \n Bottom Left {right_node_left_corner}. Top Right {TopRight} Width {TopRight.x - right_node_left_corner.x} Height: {TopRight.y - right_node_left_corner.y}");
-
             //Create node filling left half
-            LeftChild = new Node(BottomLeft, left_node_right_corner,newIndex, this, MaxIterations, minSize, maxSize, RandomGen);
+            var leftRect = new RectInt(Rect.min, left_Node_Size);
+            var rightRect = new RectInt(rightNode_Origin, rightNode_Size);
+            Debug.Log($"X Left. Layer {newIndex} \n {leftRect}");
+            Debug.Log($"X Right.  Layer {newIndex} \n {rightRect}");
+
+            Debug.Log($"LeftRect CONTAINS {Rect.Contains(leftRect.min)} && {Rect.yMax == leftRect.yMax} {Rect.max} {leftRect.max}");
+            Debug.Log($"RightRect: CONTAINS {Rect.Contains(rightRect.min)} && {Rect.max == rightRect.max} {Rect.max} {rightRect.max}");
+            Debug.Log($"TopRect: COMPARE LEFT: {leftRect.xMax} RIGHT: {rightRect.xMin}");
+
+            LeftChild = new Node(leftRect,newIndex, this, MaxIterations, minSize, maxSize, RandomGen);
             //Create node filling right half
-            RightChild = new Node(right_node_left_corner, TopRight, newIndex, this, MaxIterations, minSize, maxSize, RandomGen);
+            RightChild = new Node(rightRect, newIndex, this, MaxIterations, minSize, maxSize, RandomGen);
         }
         public void SplitY()
         {
-            Orientation = Orientation.Vertical;
+            Orientation = Orientation.Horizontal;
             //One is created on the current location, one is created Halfway up from the current position;
-            var divisionPoint = VectorHelper.NumberBetweenNumbers(BottomLeft.y, TopRight.y, minSize);
+            var divisionPoint = VectorHelper.NumberBetweenNumbers(0, Rect.height, minSize);
+            Debug.Log($"Y DIVISION: {divisionPoint} iteration {TreeLayerIndex}");
 
-            var right_node_left_corner = new Vector2Int(BottomLeft.x, divisionPoint);
-            var left_node_right_corner = new Vector2Int(TopRight.x, divisionPoint);
+            var bottomNode_Size = new Vector2Int(Rect.width, divisionPoint);
+            var rightNode_Origin = new Vector2Int(Rect.xMin, Rect.yMin + divisionPoint);
+            var rightNodeSize = new Vector2Int(Rect.width, Rect.yMax - rightNode_Origin.y);
+
             int newIndex = TreeLayerIndex + 1;
 
-            Debug.Log($"Y Bottom. Layer {newIndex} \n Bottom Left {BottomLeft}. Top Right {left_node_right_corner} Width {left_node_right_corner.x - BottomLeft.x} Height: {left_node_right_corner.y - BottomLeft.y}");
-            Debug.Log($"Y Upper. Layer {newIndex} \n Bottom Left {right_node_left_corner}. Top Right {TopRight} Width {TopRight.x - right_node_left_corner.x} Height: {TopRight.y - right_node_left_corner.y}");
+            var leftRect = new RectInt(Rect.min, bottomNode_Size);
+            var rightRect = new RectInt(rightNode_Origin, rightNodeSize);
+            Debug.Log($"TopRect: COMPARE BOTTOM: {leftRect.yMax} TOP: {rightRect.yMin}");
+
+            
+            Debug.Log($"TopRect: CONTAINS {Rect.Contains(rightRect.min)} && {Rect.max == rightRect.max}  {Rect.max} {rightRect.max}");
+            Debug.Log($"BottomRect: CONTAINS {Rect.Contains(leftRect.min)} && {Rect.xMax == leftRect.xMax} {Rect.max} {leftRect.max}");
+
+            Debug.Log($"Y Bottom. Layer {newIndex} \n {leftRect}");
+            Debug.Log($"Y Upper. Layer {newIndex} \n {rightRect}");
+
             //Create node filling bottom
-            LeftChild = new Node(BottomLeft, left_node_right_corner, TreeLayerIndex +1, this, MaxIterations, minSize, maxSize, RandomGen);
+            LeftChild = new Node(leftRect, TreeLayerIndex +1, this, MaxIterations, minSize, maxSize, RandomGen);
             //Create node filling from middle to top.
-            RightChild = new Node(right_node_left_corner, TopRight, TreeLayerIndex + 1, this, MaxIterations, minSize, maxSize, RandomGen);
+            RightChild = new Node(rightRect, TreeLayerIndex + 1, this, MaxIterations, minSize, maxSize, RandomGen);
 
         }
         public void GenerateRoom()
@@ -132,15 +158,12 @@ namespace Stealcase.Generators.Procedural.BSP
         /// <param name="topRight"></param>
         /// <param name="index"> The current Node index</param>
         /// <param name="_parent">The parent Node</param>
-        public Node(Vector2Int bottomLeft, Vector2Int topRight, int index, Node _parent, int maxIterations, int minRoomSize, int maxRoomSize, System.Random rand)
+        public Node(RectInt rect, int index, Node _parent, int maxIterations, int minRoomSize, int maxRoomSize, System.Random rand)
         {
             this.MaxIterations = maxIterations;
             this.children = new List<Node>();
             this.Parent = _parent;
-            this.BottomLeft = bottomLeft;
-            this.TopRight = topRight;
-            this.BottomRight = new Vector2Int(TopRight.x, bottomLeft.y);
-            this.TopLeft = new Vector2Int(bottomLeft.x,TopRight.y);
+            this.Rect = rect;
             this.TreeLayerIndex = index;
             this.minSize = minRoomSize;
             this.maxSize = maxRoomSize;
@@ -197,7 +220,7 @@ namespace Stealcase.Generators.Procedural.BSP
                 }
                 if(Parent != null)
                 {
-                    Parent.ConnectRooms(corridors, map);
+                    // Parent.ConnectRooms(corridors, map);
                 }
             }
         }

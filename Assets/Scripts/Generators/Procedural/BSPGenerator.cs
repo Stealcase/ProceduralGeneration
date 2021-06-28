@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Stealcase.Generators.Procedural.BSP;
 using UnityEngine;
 
-namespace Stealcase.Generators.Procedural.BSP
+namespace Stealcase.Generators.Procedural
 {
     public class BSPGenerator
     {
@@ -14,7 +15,7 @@ namespace Stealcase.Generators.Procedural.BSP
         /// </summary>
         public List<Node> Leaves = new List<Node>();
         public List<Node> AllNodes = new List<Node>();
-        public List<Room> Rooms = new List<Room>();
+        public List<Stealcase.Generators.Procedural.BSP.Room> Rooms = new List<BSP.Room>();
         public List<Room> Corridors = new List<Room>();
         public int[,] Map;
 
@@ -29,10 +30,11 @@ namespace Stealcase.Generators.Procedural.BSP
         {
             var rand = new System.Random();
             //Make -1 here to prevent index out of range exceptions
-            Vector2Int origin = new Vector2Int(0, 0);
-            Vector2Int farCorner = new Vector2Int(roomWidth - 1, roomHeight - 1);
-            rootNode = new RoomNode(new RectInt(origin, farCorner), 0, null, maxIterations, minRoomSize, maxRoomSize, rand);
-
+            var origin = new Vector2Int(0, 0);
+            var size = new Vector2Int(roomWidth - 1, roomHeight - 1);
+            var rect = new RectInt(origin, size);
+            rootNode = new RoomNode(rect, 0, null, maxIterations, minRoomSize, maxRoomSize, rand);
+            Debug.Log($"ORIGING SIZE {rect}");
         }
         public int[,] GenerateMap(int maxIterations, int minRoomSize, int maxRoomSize)
         {

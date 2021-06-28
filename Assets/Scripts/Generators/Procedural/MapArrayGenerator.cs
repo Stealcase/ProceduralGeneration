@@ -78,7 +78,7 @@ namespace Stealcase.Generators.Procedural
                     if(val == 1)invertedMap[x, y] = 0;
                 }
             }
-            return map;
+            return invertedMap;
         }
     }
 }

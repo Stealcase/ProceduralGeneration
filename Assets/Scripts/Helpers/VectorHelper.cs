@@ -41,7 +41,28 @@ public static class VectorHelper
         var _topRight = new Vector2Int(rightXCoord,rightYCoord);
 
         return new Tuple<Vector2Int, Vector2Int>(_bottomLeft, _topRight);
+    }
+    public static RectInt RectWithinBounds(Vector2Int BottomLeft, Vector2Int TopRight, int minimumSize) 
+    {
 
+        //The highest number between these two
+        //Pick a spot
+        //Then Try to find a spot that
+        var leftX_MaxCoord = Mathf.Max(TopRight.x - minimumSize, BottomLeft.x);
+        int leftXCoord = random.Next(BottomLeft.x, leftX_MaxCoord);
+        //Lowest number between these two
+        var rightXMinCoord = Mathf.Min(leftXCoord + minimumSize, TopRight.x);
+        int rightXCoord = random.Next(rightXMinCoord, TopRight.x);
+        var width = rightXCoord - leftXCoord;
+
+        var leftY_MaxCoord = Mathf.Max(TopRight.y - minimumSize, BottomLeft.y);
+        var leftYCoord = random.Next(BottomLeft.y, leftY_MaxCoord);
+        
+        var rightYMinCoord = Mathf.Min(leftYCoord + minimumSize, TopRight.y);
+        var rightYCoord = random.Next(rightYMinCoord, TopRight.y);
+        var height = rightYCoord - leftYCoord;
+
+        return new RectInt(leftXCoord, leftYCoord, width, height);
     }
     /// <summary>
     /// Returns the length between two numbers

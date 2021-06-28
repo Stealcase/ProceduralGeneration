@@ -15,7 +15,6 @@ namespace Stealcase.Generators.Procedural.BSP
             {
                 bspCreator.Generate();
             }
-
         }
     }
 

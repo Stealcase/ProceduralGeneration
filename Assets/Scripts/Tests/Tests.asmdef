@@ -3,7 +3,8 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Stealcase.Helpers"
+        "Stealcase.Helpers",
+        "Stealcase.Generators"
     ],
     "includePlatforms": [
         "Editor"

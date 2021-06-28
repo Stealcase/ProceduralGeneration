@@ -17,7 +17,6 @@ namespace Stealcase.Generators.Procedural.CellularAutomata
 
         [Range(0, 7)] public int wallDuplicationThreshold;
         [Range(40, 60)] public int randomFillPercent;
-        public bool InvertMap;
 
         //this is how you create a 2D Array!!!
         private int[,] GeneratedMap;
@@ -49,27 +48,21 @@ namespace Stealcase.Generators.Procedural.CellularAutomata
         {
             if(tilemapRenderer != null)
             {
-                var map = GetInvertedMap();
-                tilemapRenderer.RenderMap(map);
+                tilemapRenderer.RenderMap(VisibleMap);
             }
         }
         public void OverlayTilemap()
         {
             if(tilemapRenderer != null)
             {
-                var map = GetInvertedMap();
-                tilemapRenderer.UpdateMap(map);
+                tilemapRenderer.UpdateMap(VisibleMap);
             }
         }
-        public int[,] GetInvertedMap()
+        public void InvertMap()
         {
-            var map = VisibleMap;
-            if(InvertMap)
-            {
-                map = MapArrayGenerator.InvertMap(VisibleMap);
-            }
-            return map;
+            VisibleMap = MapArrayGenerator.InvertMap(VisibleMap);
         }
+
 
 
         private void RandomFillMap()
