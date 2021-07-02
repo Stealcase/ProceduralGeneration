@@ -1,3 +1,4 @@
+using System;
 using Stealcase.Helpers;
 using UnityEngine;
 
@@ -29,18 +30,31 @@ public class Room
         var xEnd = TopRight.x;
         var ystart = BottomLeft.y;
         var yEnd = TopRight.y;
-        
+        var mapX = map.GetLength(0);
+        var mapY = map.GetLength(1);
+
         for (int x = xStart; x < xEnd; x++)
         {
+            if(mapX <= x)
+            {
+                Debug.LogWarning($"X Index out of range: x: {x}");
+                continue;
+            }
             for (int y = ystart; y < yEnd; y++)
             {
+                if(mapY <= y)
+                {
+                    Debug.LogWarning($"Y Index out of range: x: {x}, y: {y}");
+                    break;
+                }
                 try
                 {
                     map[x, y] = 1;
                 }
-                catch
+                catch(IndexOutOfRangeException e)
                 {
-                    Debug.LogError($"Index out of range: x: {x}, y: {y}");
+                    Debug.LogError($"Index out of range: x: {x}, y: {y}. Map X: {mapY}; Map Y: {mapX}.");
+                    throw new IndexOutOfRangeException($"{e.Message} Index out of range: x: {x}, y: {y}. Map X: {mapY}; Map Y: {mapX}.");
                 }
             }
         }

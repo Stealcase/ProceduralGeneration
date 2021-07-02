@@ -85,8 +85,9 @@ public static class VectorHelper
     {
         if(max - min < margin)
         {
-                Debug.LogError($"Warning: Margin is too big. Min: {min} Max: {max} Margin: {margin}");
-            }
+            Debug.LogError($"Warning: Margin is too big. Min: {min} Max: {max} Margin: {margin}");
+            return -1;
+        }
         var minimum = min + margin;
         var maximum = max - margin;
         maximum = Mathf.Max(minimum, maximum);

@@ -1,3 +1,4 @@
+using System;
 using Stealcase.Helpers;
 using UnityEngine;
 
@@ -23,24 +24,44 @@ namespace Stealcase.Generators.Procedural.BSP
             // Debug.Log($"Room TopRight {Rect.max}");
             Debug.Log($"Created room with dimensions Width: {Width} Height: {Height}");
         }
+        public Room(RectInt rect)
+        {
+            Rect = rect;
+            // Debug.Log($"Room BottomLeft {Rect.min}");
+            // Debug.Log($"Room TopRight {Rect.max}");
+            Debug.Log($"Created room with dimensions Width: {Width} Height: {Height}");
+        }
         public void ToMap(int[,] map)
         {
-            var xStart = Rect.xMin;
-            var xEnd = Rect.xMax;
-            var ystart = Rect.yMin;
-            var yEnd = Rect.yMax;
+            var xStart = BottomLeft.x;
+            var xEnd = TopRight.x;
+            var ystart = BottomLeft.y;
+            var yEnd = TopRight.y;
+            var mapX = map.GetLength(0);
+            var mapY = map.GetLength(1);
 
             for (int x = xStart; x < xEnd; x++)
             {
+                if (mapX <= x)
+                {
+                    Debug.LogWarning($"X Index out of range: x: {x}");
+                    continue;
+                }
                 for (int y = ystart; y < yEnd; y++)
                 {
+                    if (mapY <= y)
+                    {
+                        Debug.LogWarning($"Y Index out of range: x: {x}, y: {y}");
+                        break;
+                    }
                     try
                     {
                         map[x, y] = 1;
                     }
-                    catch
+                    catch (IndexOutOfRangeException e)
                     {
-                        Debug.LogError($"Index out of range: x: {x}, y: {y}");
+                        Debug.LogError($"Index out of range: x: {x}, y: {y}. Map X: {mapY}; Map Y: {mapX}.");
+                        throw new IndexOutOfRangeException($"{e.Message} Index out of range: x: {x}, y: {y}. Map X: {mapY}; Map Y: {mapX}.");
                     }
                 }
             }

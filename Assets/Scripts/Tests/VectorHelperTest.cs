@@ -7,7 +7,7 @@ using Stealcase.Helpers;
 
 namespace Tests
 {
-    public class TestNumberGenerator
+    public class VectorHelperTest
     {
         // A Test behaves as an ordinary method
         [Test]
@@ -19,22 +19,30 @@ namespace Tests
             Assert.Less(num,11);
         }
         [Test]
-        public void TestRectWithinBoundsWidth()
+        public void RectWithinBoundsWidth()
         {
+            var expected = 5;
             var origin = new Vector2Int(0, 0);
             var size = new Vector2Int(10, 10);
-            RectInt rect = VectorHelper.RectWithinBounds(origin, size, 2);
 
-            Assert.IsTrue(rect.width >= 2);
+            for (int i = 0; i < 100; i++)
+            {
+                RectInt rect = VectorHelper.RectWithinBounds(origin, size, expected);
+                Assert.IsTrue(rect.width >= expected);
+            }
+
         }
         [Test]
-        public void TestRectWithinBoundsHeight()
+        public void RectWithinBoundsHeight()
         {
+            var expected = 5;
             var origin = new Vector2Int(0, 0);
             var size = new Vector2Int(10, 10);
-            RectInt rect = VectorHelper.RectWithinBounds(origin, size, 2);
-
-            Assert.IsTrue(rect.height >= 2);
+            for (int i = 0; i < 100; i++)
+            {
+                RectInt rect = VectorHelper.RectWithinBounds(origin, size, expected);
+                Assert.IsTrue(rect.height >= expected);
+            }
         }
         [Test]
         public void TestRectWithinBoundsWithinBoundsLeft()

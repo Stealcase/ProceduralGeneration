@@ -6,6 +6,8 @@ namespace Stealcase.Generators.Procedural.CellularAutomata
         private int randomFillPercent;
         private int width;
         private int height;
+        public int Width { get => width; }
+        public int Height { get => height; }
         public CellularAutomataGenerator(int width, int height, int wallDuplicationThreshold, int randomFillPercent)
         {
             this.wallDuplicationThreshold = wallDuplicationThreshold;

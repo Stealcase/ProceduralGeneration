@@ -12,8 +12,7 @@ namespace Stealcase.Generators.Procedural.CellularAutomata
         [Range(1, 128)] public int width;
         [Range(1, 128)] public int height;
 
-        public string seed;
-        public bool useRandomSeed;
+        [Tooltip("If empty, will use random seed")]public string seed;
 
         [Range(0, 7)] public int wallDuplicationThreshold;
         [Range(40, 60)] public int randomFillPercent;
@@ -32,7 +31,6 @@ namespace Stealcase.Generators.Procedural.CellularAutomata
         public void GenerateMap()
         {
             generator = new CellularAutomataGenerator(width,height,wallDuplicationThreshold,randomFillPercent);
-            if(useRandomSeed) seed += Time.time.ToString();
             GeneratedMap = generator.GenerateMap(seed);
 
             if(Application.isPlaying)
@@ -79,8 +77,10 @@ namespace Stealcase.Generators.Procedural.CellularAutomata
 
         public IEnumerator DelaySmooth(CellularAutomataGenerator generator, int[,] map)
         {
-            yield return new WaitForSeconds(2);
-            VisibleMap = generator.SmoothMap(map);
+            VisibleMap = new int[generator.Width, generator.Height];
+            StartCoroutine(VisualizeStutter(map));
+            yield return new WaitForSeconds(3);
+            StartCoroutine(VisualizeStutter(generator.SmoothMap(map)));
         }
 
         public IEnumerator VisualizeStutter(int[,] map)

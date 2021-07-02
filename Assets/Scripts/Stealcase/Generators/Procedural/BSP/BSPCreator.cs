@@ -20,6 +20,7 @@ public enum Orientation
     [Range(8, 128)] public int roomSizeX = 8, roomSizeY = 8;
     [Range(4,32)]public int minRoomSize;
     [Range(6,48)]public int maxRoomSize;
+    [Range(0,8)]public int minRoomDistance;
     [Range(1,10)]public int maxIterations;
     [Range(1,8)]public int corridorWidth;
     public bool isGenerating = false;
@@ -39,7 +40,7 @@ public enum Orientation
 
         generator = new BSPGenerator(roomSizeX, roomSizeY);
         
-        map = generator.GenerateMap(maxIterations, minRoomSize,maxRoomSize);
+        map = generator.GenerateMap(maxIterations, minRoomSize, maxRoomSize, minRoomDistance);
         if(mapRenderer != null)
         {
             mapRenderer.RenderMap(map);
