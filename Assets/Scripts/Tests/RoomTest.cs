@@ -51,16 +51,19 @@ namespace Tests
             var expected = 64;
             var expected2 = 128;
             var minimumRoomSize = expected;
-            //Generate array where every coordinate is "1"
-            var arr = MapArrayGenerator.GenerateArray(expected,expected2, false);
-            var origin = new Vector2Int(0, 0);
-            var size = new Vector2Int(64, 64);
+            var nodeOrigin = new Vector2Int(0, 0);
+            var nodeSize = new Vector2Int(expected, expected);
+            System.Random rand = new System.Random();
             for (int i = 0; i < 100; i++)
             {
-                var room = new Room(origin, size, minimumRoomSize);
+                //Generate array where every coordinate is "0"
+                var arr = MapArrayGenerator.GenerateArray(expected,expected2, true);
+                var room = new Room(nodeOrigin, nodeSize, minimumRoomSize/2, 0,rand);
+                room.ToMap(arr);
                 Assert.IsTrue(ConfirmMapping(arr,room));
             }
         }
+        //Confirm that mapping of room matches 1:1 with Map
         public bool ConfirmMapping(int[,] map, Room room)
         {
             var xStart = room.BottomLeft.x;
@@ -81,16 +84,16 @@ namespace Tests
                 {
                     if(mapY <= y)
                     {
-                        Debug.LogWarning($"Y Index out of range: x: {x}, y: {y}");
+                        Debug.LogWarning($"Y Index out of range: x: {x}, y: {y}"); 
                         break;
                     }
                     if(map[x, y] == 1)
                     {
-                            continue;
+                        continue;
                     }
                     else
                     {
-                            return false;
+                        return false;
                     }
                 }
             }
