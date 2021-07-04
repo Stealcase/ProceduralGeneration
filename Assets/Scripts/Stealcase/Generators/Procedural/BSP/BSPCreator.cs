@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Stealcase.Helpers;
 using UnityEngine;
 using Stealcase.Generators.Tiles;
 
@@ -23,6 +22,7 @@ public enum Orientation
     [Range(0,8)]public int minRoomDistance;
     [Range(1,10)]public int maxIterations;
     [Range(1,8)]public int corridorWidth;
+    public string Seed;
     public bool isGenerating = false;
     public int[,] map;
     public MapRenderer mapRenderer; 
@@ -38,9 +38,9 @@ public enum Orientation
     public void Generate()
     {
 
-        generator = new BSPGenerator(roomSizeX, roomSizeY);
-        
-        map = generator.GenerateMap(maxIterations, minRoomSize, maxRoomSize, minRoomDistance);
+            generator = new BSPGenerator(roomSizeX, roomSizeY, Seed);
+
+            map = generator.GenerateMap(maxIterations, minRoomSize, maxRoomSize, minRoomDistance);
         if(mapRenderer != null)
         {
             mapRenderer.RenderMap(map);

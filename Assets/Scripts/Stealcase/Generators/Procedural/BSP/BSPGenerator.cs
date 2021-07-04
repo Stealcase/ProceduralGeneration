@@ -17,22 +17,28 @@ namespace Stealcase.Generators.Procedural.BSP
         public List<Room> Rooms = new List<Room>();
         public List<Room> Corridors = new List<Room>();
         public int[,] Map;
+        private int Seed;
 
 
-        public BSPGenerator(int roomWidth, int roomHeight)
+        public BSPGenerator(int roomWidth, int roomHeight, string Seed)
         {
             this.roomWidth = roomWidth;
             this.roomHeight = roomHeight;
+            if(string.IsNullOrEmpty(Seed))
+            {
+                Seed = DateTime.UtcNow.ToString();
+            }
+            this.Seed = Seed.GetHashCode();
+            Debug.Log($"Seed: {Seed}. Hashed: {this.Seed}");
         }
 
         public void CalculateRooms(int maxIterations, int minRoomSize, int maxRoomSize, int roomMargin)
         {
-            var rand = new System.Random();
+            var rand = new System.Random(Seed);
             //Make -1 here to prevent index out of range exceptions
             Vector2Int origin = new Vector2Int(0, 0);
             Vector2Int farCorner = new Vector2Int(roomWidth - 1, roomHeight - 1);
             rootNode = new RoomNode(new RectInt(origin, farCorner), 0, null, maxIterations, minRoomSize, maxRoomSize, roomMargin, rand);
-
         }
         public int[,] GenerateMap(int maxIterations, int minRoomSize, int maxRoomSize, int roomMargin)
         {
