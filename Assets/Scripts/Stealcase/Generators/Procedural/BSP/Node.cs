@@ -101,9 +101,9 @@ namespace Stealcase.Generators.Procedural.BSP
             Debug.Log($"X Left. Layer {newIndex} \n {leftRect}");
             Debug.Log($"X Right.  Layer {newIndex} \n {rightRect}");
 
-            LeftChild = new Node(leftRect,newIndex, this, MaxIterations, minSize, maxSize, RoomMargin, RandomGen);
+            LeftChild = new Node(leftRect,newIndex, this, MaxIterations, minSize, maxSize, CorridorWidth, RoomMargin, RandomGen);
             //Create node filling right half
-            RightChild = new Node(rightRect, newIndex, this, MaxIterations, minSize, maxSize, RoomMargin, RandomGen);
+            RightChild = new Node(rightRect, newIndex, this, MaxIterations, minSize, maxSize, CorridorWidth, RoomMargin, RandomGen);
         }
         public void SplitUpAndDown()
         {
@@ -115,9 +115,9 @@ namespace Stealcase.Generators.Procedural.BSP
             Debug.Log($"Y Bottom. Layer {newIndex} \n {leftRect}");
             Debug.Log($"Y Upper. Layer {newIndex} \n {rightRect}");
             //Create node filling bottom
-            LeftChild = new Node(leftRect, newIndex, this, MaxIterations, minSize, maxSize, RoomMargin, RandomGen);
+            LeftChild = new Node(leftRect, newIndex, this, MaxIterations, minSize, maxSize, CorridorWidth, RoomMargin, RandomGen);
             //Create node filling from middle to top.
-            RightChild = new Node(rightRect, newIndex, this, MaxIterations, minSize, maxSize, RoomMargin, RandomGen);
+            RightChild = new Node(rightRect, newIndex, this, MaxIterations, minSize, maxSize, CorridorWidth, RoomMargin, RandomGen);
 
         }
         public Tuple<RectInt,RectInt> SplitVertically()
@@ -178,13 +178,14 @@ namespace Stealcase.Generators.Procedural.BSP
         /// <param name="topRight"></param>
         /// <param name="index"> The current Node index</param>
         /// <param name="_parent">The parent Node</param>
-        public Node(RectInt rect, int index, Node _parent, int maxIterations, int minRoomSize, int maxRoomSize, int roomMargin, System.Random rand)
+        public Node(RectInt rect, int index, Node _parent, int maxIterations, int minRoomSize, int maxRoomSize,int corridorSize, int roomMargin, System.Random rand)
         {
             this.MaxIterations = maxIterations;
             this.children = new List<Node>();
             this.Parent = _parent;
             this.Rect = rect;
             this.RoomMargin = roomMargin;
+            this.CorridorWidth = corridorSize;
             this.TreeLayerIndex = index;
             this.minSize = minRoomSize;
             this.maxSize = maxRoomSize;
@@ -205,36 +206,67 @@ namespace Stealcase.Generators.Procedural.BSP
             {
                 return;
             }
+            if(Room != null)
+            {
+                if(Parent != null)
+                {
+                    Parent.GenerateCorridor(corridors);
+                }
+                return;
+            }
+            Room leftRoom;
+            Room rightRoom;
+
             if(LeftChild != null && LeftChild.Room != null && RightChild != null && RightChild.Room != null)
             {
-                Corridor = new List<Room>();
-                if(SplitDirection == Orientation.Vertical)
-                {
-                    ConnectHorizontalRooms();
-                }
-                if (SplitDirection == Orientation.Horizontal)
-                {
-                    ConnectVerticalRooms();
-                }
-                corridors.AddRange(Corridor);
+                leftRoom = LeftChild.Room;
+                rightRoom = RightChild.Room;
             }
+            else
+            {
+                if (SplitDirection == Orientation.Vertical)
+                {
+                    leftRoom = LeftChild.DigForRoom(Direction.Right);
+                    rightRoom = RightChild.DigForRoom(Direction.Left);
+                }
+                else
+                {
+                    leftRoom = LeftChild.DigForRoom(Direction.Left);
+                    rightRoom = RightChild.DigForRoom(Direction.Right);
+                }
+            }
+            Corridor = new List<Room>();
+            if(leftRoom == null || rightRoom == null)
+            {
+                return;
+            }
+            if(SplitDirection == Orientation.Vertical)
+            {
+                Corridor = ConnectHorizontalRooms(leftRoom, rightRoom);
+            }
+            if (SplitDirection == Orientation.Horizontal)
+            {
+                Corridor = ConnectVerticalRooms(leftRoom, rightRoom);
+            }
+            corridors.AddRange(Corridor);
+
             if(Parent != null)
             {
                 Parent.GenerateCorridor(corridors);
             }
         }
 
-        private void ConnectVerticalRooms()
+        private List<Room> ConnectVerticalRooms(Room bottomRoom, Room topRoom)
         {
             //Try to get Values that match
-            var leftXVal = Mathf.Max(LeftChild.Room.Rect.xMin, RightChild.Room.Rect.xMin);
+            List<Room> corridors = new List<Room>();
+            var leftXVal = Mathf.Max(bottomRoom.Rect.xMin, topRoom.Rect.xMin);
             Debug.Log($"Left X value {leftXVal}");
-            var rightXVal = Mathf.Min(LeftChild.Room.Rect.xMax, RightChild.Room.Rect.xMax);
+            var rightXVal = Mathf.Min(bottomRoom.Rect.xMax, topRoom.Rect.xMax);
             Debug.Log($"Right x value {rightXVal}");
             rightXVal = Mathf.Max(leftXVal, rightXVal);
             Debug.Log($"Calculated Right X val {rightXVal}");
-            var corridorWidth = 2;
-            var xPoint = VectorHelper.NumberBetweenNumbers(leftXVal, rightXVal, corridorWidth, RandomGen);
+            var xPoint = VectorHelper.NumberBetweenNumbers(leftXVal, rightXVal, CorridorWidth, RandomGen);
             Debug.Log($"Calculated POINT {xPoint}");
             //If the rooms cant be connected with a straight Line, connect with a z Pattern.
             if (xPoint == -1)
@@ -247,64 +279,64 @@ namespace Stealcase.Generators.Procedural.BSP
                     int bottomCorridor_X_Origin = 0;
                     int topCorridor_X_Origin = 0;
                     //Pick the closest points to connect, either top corner <=> bottom corner || bottom Corner <=> Top Corner
-                    if(Mathf.Abs(LeftChild.Room.Rect.xMax - RightChild.Room.Rect.xMin) < Mathf.Abs(LeftChild.Room.Rect.xMin - RightChild.Room.Rect.xMax))
+                    if(Mathf.Abs(bottomRoom.Rect.xMax - topRoom.Rect.xMin) < Mathf.Abs(bottomRoom.Rect.xMin - topRoom.Rect.xMax))
                     {
-                        bottomCorridor_X_Origin = LeftChild.Room.Rect.xMax - corridorWidth;
-                        topCorridor_X_Origin = RightChild.Room.Rect.xMin;
+                        bottomCorridor_X_Origin = bottomRoom.Rect.xMax - CorridorWidth;
+                        topCorridor_X_Origin = topRoom.Rect.xMin;
                         bottom_right = true;
                     }
                     else
                     {
                         //left point with Corridor Width offset
-                        topCorridor_X_Origin = RightChild.Room.Rect.xMax - corridorWidth;
+                        topCorridor_X_Origin = topRoom.Rect.xMax - CorridorWidth;
                         top_right = true;
-                        bottomCorridor_X_Origin = LeftChild.Room.Rect.xMin;
+                        bottomCorridor_X_Origin = bottomRoom.Rect.xMin;
                     }
 
                     //If the Right Room or left Room is adjacent to the divison point
-                    top_tangential = DivisionPoint.y == RightChild.Room.Rect.yMin;
-                    bottom_tangential = DivisionPoint.y == LeftChild.Room.Rect.yMax;
+                    top_tangential = DivisionPoint.y == topRoom.Rect.yMin;
+                    bottom_tangential = DivisionPoint.y == bottomRoom.Rect.yMax;
 
                     //Calculate if corridor should expand upwards or downwards
                     if (!bottom_tangential)
                     {
                         //Add Corridor from Left Room To Divison Point
-                        // int yOffset = left_top ? + corridorWidth : 0;
-                        Corridor.Add(new Room(new RectInt(bottomCorridor_X_Origin, LeftChild.Room.Rect.yMax, corridorWidth, DivisionPoint.y - LeftChild.Room.Rect.yMax)));
+                        // int yOffset = left_top ? + CorridorWidth : 0;
+                        corridors.Add(new Room(new RectInt(bottomCorridor_X_Origin, bottomRoom.Rect.yMax, CorridorWidth, DivisionPoint.y - bottomRoom.Rect.yMax)));
                     }
                     //Check if Right Child is adjacent to divison Point
                     if (!top_tangential)
                     {
                         //Add Corridor from Right Room To Divison Point
-                        int yOffset = top_right ? -corridorWidth : 0;
-                        Corridor.Add(new Room(new RectInt(topCorridor_X_Origin, DivisionPoint.y, corridorWidth, RightChild.Room.Rect.yMin - DivisionPoint.y)));
+                        int yOffset = top_right ? -CorridorWidth : 0;
+                        corridors.Add(new Room(new RectInt(topCorridor_X_Origin, DivisionPoint.y, CorridorWidth, topRoom.Rect.yMin - DivisionPoint.y)));
                     }
 
                     bool rightLowest = bottomCorridor_X_Origin > topCorridor_X_Origin;
 
-                    int offset = top_right ? corridorWidth : 0;
+                    int offset = top_right ? CorridorWidth : 0;
                     int xPos = Mathf.Min(bottomCorridor_X_Origin, topCorridor_X_Origin) + offset;
                     int horizontalCorridor = Mathf.Abs(topCorridor_X_Origin - bottomCorridor_X_Origin);
-                    Corridor.Add(new Room(new RectInt(xPos, DivisionPoint.y, horizontalCorridor, corridorWidth)));
-                    //If LeftTanget && rightTangent && leftY < RightY
+                    corridors.Add(new Room(new RectInt(xPos, DivisionPoint.y, horizontalCorridor, CorridorWidth)));
             }
             else
             {
-                Corridor.Add(new Room(new RectInt(new Vector2Int(xPoint - corridorWidth, LeftChild.Room.Rect.yMax), new Vector2Int(2, RightChild.Room.Rect.yMin - LeftChild.Room.Rect.yMax))));
+                corridors.Add(new Room(new RectInt(new Vector2Int(xPoint - CorridorWidth, bottomRoom.Rect.yMax), new Vector2Int(CorridorWidth, topRoom.Rect.yMin - bottomRoom.Rect.yMax))));
             }
+            return corridors;
         }
-        private void ConnectHorizontalRooms()
+        private List<Room> ConnectHorizontalRooms(Room leftRoom, Room rightRoom)
         {
+            List<Room> corridors = new List<Room>();
             Debug.Log("Running LeftRightSplit");
             //Try to get Values that match
-            var topYVal = Mathf.Min(LeftChild.Room.Rect.yMax, RightChild.Room.Rect.yMax);
+            var topYVal = Mathf.Min(leftRoom.Rect.yMax, rightRoom.Rect.yMax);
             Debug.Log($"Top Y value {topYVal}");
-            var botYVal = Mathf.Max(LeftChild.Room.Rect.yMin, RightChild.Room.Rect.yMin);
+            var botYVal = Mathf.Max(leftRoom.Rect.yMin, rightRoom.Rect.yMin);
             Debug.Log($"Bot Y value {botYVal}");
             topYVal = Mathf.Max(topYVal, botYVal);
             Debug.Log($"Calculated Top Y val {topYVal}");
-            var corridorWidth = 2;
-            var yPoint = VectorHelper.NumberBetweenNumbers(botYVal, topYVal, corridorWidth, RandomGen);
+            var yPoint = VectorHelper.NumberBetweenNumbers(botYVal, topYVal, CorridorWidth, RandomGen);
             Debug.Log($"Calculated POINT {yPoint}");
             //If the rooms cant be connected with a straight Line, connect with a z Pattern.
             if (yPoint == -1)
@@ -317,52 +349,53 @@ namespace Stealcase.Generators.Procedural.BSP
                     int leftCorridor_Y_Origin = 0;
                     int rightCorridor_Y_Origin = 0;
                     //Pick the closest points to connect, either top corner <=> bottom corner || bottom Corner <=> Top Corner
-                    if(Mathf.Abs(LeftChild.Room.Rect.yMax - RightChild.Room.Rect.yMin) < Mathf.Abs(LeftChild.Room.Rect.yMin - RightChild.Room.Rect.yMax))
+                    if(Mathf.Abs(leftRoom.Rect.yMax - rightRoom.Rect.yMin) < Mathf.Abs(leftRoom.Rect.yMin - rightRoom.Rect.yMax))
                     {
-                        leftCorridor_Y_Origin = LeftChild.Room.Rect.yMax - corridorWidth;
-                        rightCorridor_Y_Origin = RightChild.Room.Rect.yMin;
+                        leftCorridor_Y_Origin = leftRoom.Rect.yMax - CorridorWidth;
+                        rightCorridor_Y_Origin = rightRoom.Rect.yMin;
                         left_top = true;
                     }
                     else
                     {
                         //left point with Corridor Width offset
-                        rightCorridor_Y_Origin = RightChild.Room.Rect.yMax - corridorWidth;
+                        rightCorridor_Y_Origin = rightRoom.Rect.yMax - CorridorWidth;
                         right_top = true;
-                        leftCorridor_Y_Origin = LeftChild.Room.Rect.yMin;
+                        leftCorridor_Y_Origin = leftRoom.Rect.yMin;
                     }
 
                     //If the Right Room or left Room is adjacent to the divison point
-                    right_tangential = DivisionPoint.x == RightChild.Room.Rect.xMin;
-                    left_tangential = DivisionPoint.x == LeftChild.Room.Rect.xMax;
+                    right_tangential = DivisionPoint.x == rightRoom.Rect.xMin;
+                    left_tangential = DivisionPoint.x == leftRoom.Rect.xMax;
 
                     //Calculate if corridor should expand upwards or downwards
                     if (!left_tangential)
                     {
                         //Add Corridor from Left Room To Divison Point
-                        // int yOffset = left_top ? + corridorWidth : 0;
-                        Corridor.Add(new Room(new RectInt(LeftChild.Room.Rect.xMax, leftCorridor_Y_Origin, DivisionPoint.x - LeftChild.Room.Rect.xMax + corridorWidth, corridorWidth)));
+                        // int yOffset = left_top ? + CorridorWidth : 0;
+                        corridors.Add(new Room(new RectInt(leftRoom.Rect.xMax, leftCorridor_Y_Origin, DivisionPoint.x - leftRoom.Rect.xMax + CorridorWidth, CorridorWidth)));
                     }
                     //Check if Right Child is adjacent to divison Point
                     if (!right_tangential)
                     {
                         //Add Corridor from Right Room To Divison Point
-                        int yOffset = right_top ? -corridorWidth : 0;
-                        Corridor.Add(new Room(new RectInt(DivisionPoint.x, rightCorridor_Y_Origin, RightChild.Room.Rect.xMin - DivisionPoint.x, corridorWidth)));
+                        int yOffset = right_top ? -CorridorWidth : 0;
+                        corridors.Add(new Room(new RectInt(DivisionPoint.x, rightCorridor_Y_Origin, rightRoom.Rect.xMin - DivisionPoint.x, CorridorWidth)));
                     }
 
                     bool rightLowest = leftCorridor_Y_Origin > rightCorridor_Y_Origin;
 
-                    int offset = right_top ? corridorWidth : 0;
+                    int offset = right_top ? CorridorWidth : 0;
                     int yPos = Mathf.Min(leftCorridor_Y_Origin, rightCorridor_Y_Origin) + offset;
                     int verticalCorridorHeight = Mathf.Abs(rightCorridor_Y_Origin - leftCorridor_Y_Origin);
-                    Corridor.Add(new Room(new RectInt(DivisionPoint.x, yPos, corridorWidth, verticalCorridorHeight)));
+                    corridors.Add(new Room(new RectInt(DivisionPoint.x, yPos, CorridorWidth, verticalCorridorHeight)));
                     //If LeftTanget && rightTangent && leftY < RightY
             }
             else
             {
                 //Connect rooms with a straight Line
-                Corridor.Add(new Room(new RectInt(LeftChild.Room.Rect.xMax, yPoint - corridorWidth, RightChild.Room.Rect.xMin - LeftChild.Room.Rect.xMax, corridorWidth)));
+                corridors.Add(new Room(new RectInt(leftRoom.Rect.xMax, yPoint - CorridorWidth, rightRoom.Rect.xMin - leftRoom.Rect.xMax, CorridorWidth)));
             }
+            return corridors;
         }
 
         public void Traverse(List<Node> nodes, List<Node> Leaves)
@@ -381,6 +414,26 @@ namespace Stealcase.Generators.Procedural.BSP
             if(RightChild == null && LeftChild == null && Room != null)
             {
                 Leaves.Add(this);
+            }
+        }
+        public Room DigForRoom(Direction direction)
+        {
+            if(Room != null)
+            {
+                return Room;
+            }
+            if(LeftChild == null || RightChild == null)
+            {
+                return null;
+            }
+            switch (direction)
+            {
+                case Direction.Left:
+                    return LeftChild.DigForRoom(direction);
+
+                default:
+                    return RightChild.DigForRoom(direction);
+
             }
         }
 

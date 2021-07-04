@@ -1,11 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
+using Stealcase.Generators.Procedural.CellularAutomata;
 
-namespace Stealcase.Generators.Procedural.CellularAutomata
+namespace Stealcase.Generators
 {
-    using UnityEngine;
-    using UnityEditor;
     
     [CustomEditor(typeof(MapGenerator))]
     public class MapGeneratorEditor : Editor

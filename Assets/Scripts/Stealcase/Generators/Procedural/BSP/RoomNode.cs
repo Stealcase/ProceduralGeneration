@@ -9,7 +9,7 @@ namespace Stealcase.Generators.Procedural.BSP
 {
     public class RoomNode : Node
     {
-        public RoomNode(RectInt rect, int index, Node _parent, int maxIterations, int minRoomSize, int maxRoomSize, int roomMargin, System.Random rand) : base(rect, index, _parent, maxIterations, minRoomSize, maxRoomSize, roomMargin, rand)
+        public RoomNode(RectInt rect, int index, Node _parent, int maxIterations, int minRoomSize, int maxRoomSize, int cooridorSize, int roomMargin, System.Random rand) : base(rect, index, _parent, maxIterations, minRoomSize, maxRoomSize, cooridorSize, roomMargin, rand)
         {
         }
 

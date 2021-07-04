@@ -14,7 +14,7 @@ namespace Tests
         public void HorizontalSplitLocationSymmetry()
         {
             var rand = new System.Random();
-            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 0, rand);
+            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 2, 0, rand);
             var tup = rootNode.SplitHorizontally();
             var left = tup.Item1;
             var right = tup.Item2;
@@ -24,7 +24,7 @@ namespace Tests
         public void HorizontalSplitTopMaxInsideRect()
         {
             var rand = new System.Random();
-            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 0, rand);
+            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 2, 0, rand);
             var tup = rootNode.SplitHorizontally();
             var left = tup.Item1;
             var right = tup.Item2;
@@ -34,7 +34,7 @@ namespace Tests
         public void HorizontalSplitTopMinInsideRect()
         {
             var rand = new System.Random();
-            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 0, rand);
+            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 2, 0, rand);
             var tup = rootNode.SplitHorizontally();
             var left = tup.Item1;
             var right = tup.Item2;
@@ -44,7 +44,7 @@ namespace Tests
         public void HorizontalSplitLeftWallCorrect()
         {
             var rand = new System.Random();
-            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 0, rand);
+            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 2, 0, rand);
             var tup = rootNode.SplitHorizontally();
             var left = tup.Item1;
             var right = tup.Item2;
@@ -54,7 +54,7 @@ namespace Tests
         public void HorizontalSplitBottomMinInsideNode()
         {
             var rand = new System.Random();
-            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 0, rand);
+            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 2, 0, rand);
             var tup = rootNode.SplitHorizontally();
             var left = tup.Item1;
             var right = tup.Item2;
@@ -65,7 +65,7 @@ namespace Tests
         {
             var rand = new System.Random();
             var minSize = 3;
-            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, minSize, 5, 0, rand);
+            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, minSize, 5, 2, 0, rand);
             var tup = rootNode.SplitHorizontally();
             var left = tup.Item1;
             var right = tup.Item2;
@@ -88,7 +88,7 @@ namespace Tests
         public void HorizontalSplitBottomXMaxInsideRect()
         {
             var rand = new System.Random();
-            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 0, rand);
+            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 2, 0, rand);
             var tup = rootNode.SplitHorizontally();
             var left = tup.Item1;
             var right = tup.Item2;
@@ -99,7 +99,7 @@ namespace Tests
         public void VerticalSplitLocationSymmetry()
         {
             var rand = new System.Random();
-            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 0, rand);
+            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 2, 0, rand);
             var tup = rootNode.SplitVertically();
             var bottom = tup.Item1;
             var top = tup.Item2;
@@ -109,7 +109,7 @@ namespace Tests
         public void VerticalSplitTopMaxInsideRect()
         {
             var rand = new System.Random();
-            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 0, rand);
+            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 2, 0, rand);
             var tup = rootNode.SplitVertically();
             var bottom = tup.Item1;
             var top = tup.Item2;
@@ -119,7 +119,7 @@ namespace Tests
         public void VerticalSplitTopMinInsideRect()
         {
             var rand = new System.Random();
-            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 0, rand);
+            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 2, 0, rand);
             var tup = rootNode.SplitVertically();
             var bottom = tup.Item1;
             var top = tup.Item2;
@@ -129,7 +129,7 @@ namespace Tests
         public void VerticalSplitLeftWallCorrect()
         {
             var rand = new System.Random();
-            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 0, rand);
+            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 2, 0, rand);
             var tup = rootNode.SplitVertically();
             var bottom = tup.Item1;
             var top = tup.Item2;
@@ -139,7 +139,7 @@ namespace Tests
         public void VerticalSplitBottomMinInsideNode()
         {
             var rand = new System.Random();
-            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 0, rand);
+            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 2, 0, rand);
             var tup = rootNode.SplitVertically();
             var bottom = tup.Item1;
             var top = tup.Item2;
@@ -149,7 +149,7 @@ namespace Tests
         public void VerticalSplitBottomXMaxInsideRect()
         {
             var rand = new System.Random();
-            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 0, rand);
+            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, 3, 5, 2, 0, rand);
             var tup = rootNode.SplitVertically();
             var bottom = tup.Item1;
             var top = tup.Item2;
@@ -160,7 +160,7 @@ namespace Tests
         {
             var rand = new System.Random();
             var minSize = 3;
-            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, minSize, 5, 0, rand);
+            var rootNode = new Stealcase.Generators.Procedural.BSP.Node(new RectInt(new Vector2Int(0, 0), new Vector2Int(10, 10)),0, null, 0, minSize, 5, 2, 0, rand);
             var tup = rootNode.SplitVertically();
             var bottom = tup.Item1;
             var top = tup.Item2;

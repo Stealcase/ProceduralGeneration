@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
-
-namespace Stealcase.Generators.Procedural.BSP
+using Stealcase.Generators.Procedural.BSP;
+namespace Stealcase.Generators
 {
     
     [CustomEditor(typeof(BSPCreator))]
@@ -14,6 +14,10 @@ namespace Stealcase.Generators.Procedural.BSP
             if(GUILayout.Button("Generate Map"))
             {
                 bspCreator.Generate();
+            }
+            if(GUILayout.Button("Render Map"))
+            {
+                bspCreator.RenderMap();
             }
         }
     }

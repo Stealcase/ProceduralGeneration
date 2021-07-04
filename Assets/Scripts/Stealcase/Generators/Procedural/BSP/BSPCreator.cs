@@ -12,20 +12,31 @@ public enum Orientation
     Vertical,
     Random
 }
+public enum Direction
+{
+    Left,
+    Right
+}
     public class BSPCreator : MonoBehaviour
     {
 
     [SerializeField]public BSPGenerator generator;
     [Range(8, 128)] public int roomSizeX = 8, roomSizeY = 8;
     [Range(4,32)]public int minRoomSize;
-    [Range(6,48)]public int maxRoomSize;
-    [Range(0,8)]public int minRoomDistance;
-    [Range(1,10)]public int maxIterations;
-    [Range(1,8)]public int corridorWidth;
-    public string Seed;
-    public bool isGenerating = false;
-    public int[,] map;
+    [SerializeField][Range(6, 48)] private int maxRoomSize;
+    public float MaxRoomSize { get => maxRoomSize; set => maxRoomSize = (int)value; }
+
+    [SerializeField][Range(0, 8)] private int minRoomDistance;
+    public float MinRoomDistance { get => minRoomDistance; set => minRoomDistance = (int)value; }
+    [SerializeField][Range(1, 10)] private int maxIterations;
+    public float MaxIterations { get => maxIterations; set => maxIterations = (int)value; }
+    [SerializeField][Range(1, 8)] private int corridorWidth;
+    public float CorridorWidth { get => corridorWidth; set => corridorWidth = (int)value; }
+    [SerializeField] private string seed;
+    public int[,] Map { get => generator.Map; }
+    public string Seed { get => seed; set => seed = value; }
     public MapRenderer mapRenderer; 
+
 
 
 
@@ -38,25 +49,31 @@ public enum Orientation
     public void Generate()
     {
 
-            generator = new BSPGenerator(roomSizeX, roomSizeY, Seed);
+            generator = new BSPGenerator(roomSizeX, roomSizeY, (int)CorridorWidth, Seed);
+            generator.GenerateRooms((int)MaxIterations, minRoomSize, (int)MaxRoomSize, (int)MinRoomDistance);
+            if(Application.isPlaying)
+            {
+                generator.GenerateMap();
+            }
+            else
+            {
+                generator.GenerateMap();
+                // if(mapRenderer != null)
+                // {
+                //     mapRenderer.RenderMap(Map);
+                // }
+            }
 
-            map = generator.GenerateMap(maxIterations, minRoomSize, maxRoomSize, minRoomDistance);
+    }
+    public void RenderMap()
+    {
         if(mapRenderer != null)
         {
-            mapRenderer.RenderMap(map);
+            mapRenderer.RenderMap(Map);
         }
-        isGenerating = false;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if(isGenerating)
-        {
-            Generate();
-        }
-        
-    }
+
         // {
         //     for(int x = 0; x < width; x++)
         //     {
