@@ -260,27 +260,21 @@ namespace Stealcase.Generators.Procedural.BSP
                     bool right_top = false;
                     int leftCorridor_Y_Origin = 0;
                     int rightCorridor_Y_Origin = 0;
-                    //Check if any of the Points are at the top of the room.
-                    if(LeftChild.Room.Rect.yMax <= RightChild.Room.Rect.yMin)
+                    //Pick the closest points to connect, either top corner <=> bottom corner or bottom Corner <=> Top Corner
+                    if(Mathf.Abs(LeftChild.Room.Rect.yMax - RightChild.Room.Rect.yMin) < Mathf.Abs(LeftChild.Room.Rect.yMin - RightChild.Room.Rect.yMax))
                     {
                         leftCorridor_Y_Origin = LeftChild.Room.Rect.yMax - corridorWidth;
+                        rightCorridor_Y_Origin = RightChild.Room.Rect.yMin;
                         left_top = true;
                     }
                     else
                     {
                         //left point with Corridor Width offset
-                        leftCorridor_Y_Origin = LeftChild.Room.Rect.yMin;
-                    }
-                    if(RightChild.Room.Rect.yMax <= LeftChild.Room.Rect.yMin)
-                    {
-                        //left point with Corridor Width offset
                         rightCorridor_Y_Origin = RightChild.Room.Rect.yMax - corridorWidth;
                         right_top = true;
+                        leftCorridor_Y_Origin = LeftChild.Room.Rect.yMin;
                     }
-                    else
-                    {
-                        rightCorridor_Y_Origin = RightChild.Room.Rect.yMin;
-                    }
+
                     //If the Right Room or left Room is adjacent to the divison point
                     right_tangential = DivisionPoint.x == RightChild.Room.Rect.xMin;
                     left_tangential = DivisionPoint.x == LeftChild.Room.Rect.xMax;
@@ -299,15 +293,9 @@ namespace Stealcase.Generators.Procedural.BSP
                         int yOffset = right_top ? -corridorWidth : 0;
                         Corridor.Add(new Room(new RectInt(DivisionPoint.x, rightCorridor_Y_Origin, RightChild.Room.Rect.xMin - DivisionPoint.x, corridorWidth)));
                     }
-                    if(left_tangential && right_tangential)
-                    {
 
-                    }
                     bool rightLowest = leftCorridor_Y_Origin > rightCorridor_Y_Origin;
-                    if(left_tangential && rightLowest)
-                    {
-                        //Need to increase the height by corridorWidth 
-                    }
+
                     int offset = right_top ? corridorWidth : 0;
                     int yPos = Mathf.Min(leftCorridor_Y_Origin, rightCorridor_Y_Origin) + offset;
                     int verticalCorridorHeight = Mathf.Abs(rightCorridor_Y_Origin - leftCorridor_Y_Origin);
