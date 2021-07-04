@@ -58,11 +58,11 @@ public static class VectorHelper
         int rightXCoord = rand.Next(rightXMinCoord, TopRight.x - margin);
         var width = rightXCoord - leftXCoord;
 
-        //Define biggest possible x Coord
+        //Define biggest possible Y Coord
         var leftY_MaxCoord = Mathf.Max(TopRight.y - (minimumSize + margin), BottomLeft.y + margin);
-        var leftYCoord = rand.Next(BottomLeft.y, leftY_MaxCoord - margin);
+        var leftYCoord = rand.Next(BottomLeft.y + margin, leftY_MaxCoord);
         
-        //Randomly Define Size:
+        //Randomly Define Y Size:
         var rightYMinCoord = Mathf.Min(leftYCoord + minimumSize, TopRight.y - margin);
         var rightYCoord = rand.Next(rightYMinCoord, TopRight.y - margin);
         var height = rightYCoord - leftYCoord;
