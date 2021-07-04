@@ -17,9 +17,9 @@ namespace Stealcase.Generators.Procedural.BSP
         public Vector2Int TopRight { get => Rect.max; }
         public RectInt Rect { get; set; }
         public Vector2 Center { get => new Vector2(BottomLeft.x + (Width / 2), BottomLeft.y + (Height / 2)); }
-        public Room(Vector2Int bottomLeft, Vector2Int topRight, int minSize)
+        public Room(Vector2Int bottomLeft, Vector2Int topRight, int minSize, int margin = 0, System.Random rand = null)
         {
-            Rect = VectorHelper.RectWithinBounds(bottomLeft, topRight, minSize);
+            Rect = VectorHelper.RectWithinBounds(bottomLeft, topRight, minSize, margin, rand);
             // Debug.Log($"Room BottomLeft {Rect.min}");
             // Debug.Log($"Room TopRight {Rect.max}");
             Debug.Log($"Created room with dimensions Width: {Width} Height: {Height}");
